@@ -1686,6 +1686,7 @@ spec:
         - 0
         - false
         - 1.3
+        - <>&
 
   - name: whalesay
     inputs:
@@ -1709,11 +1710,12 @@ func TestExpandWithItems(t *testing.T) {
 	woc := newWorkflowOperationCtx(wf, controller)
 	newSteps, err := woc.expandStep(wf.Spec.Templates[0].Steps[0].Steps[0])
 	assert.NoError(t, err)
-	assert.Equal(t, 5, len(newSteps))
+	assert.Equal(t, 6, len(newSteps))
 	woc.operate()
 	pods, err := controller.kubeclientset.CoreV1().Pods("").List(metav1.ListOptions{})
 	assert.NoError(t, err)
-	assert.Equal(t, 5, len(pods.Items))
+	assert.Equal(t, 6, len(pods.Items))
+	assert.Equal(t, "<>&", newSteps[5].Arguments.Parameters[0].Value.String())
 }
 
 var expandWithItemsMap = `
